@@ -12,11 +12,11 @@ from flask_qrcode import QRcode
 
 
 from urllib.parse import unquote
-import socket    
-hostname = socket.gethostname()    
-IPAddr = socket.gethostbyname(hostname)    
-print("Your Computer Name is: " + hostname)    
-print("Your Computer IP Address is: " + IPAddr)   
+import socket
+hostname = socket.gethostname()
+IPAddr = socket.gethostbyname(hostname)
+print("Your Computer Name is: " + hostname)
+print("Your Computer IP Address is: " + IPAddr)
 maxNameLength = 15
 
 
@@ -36,8 +36,6 @@ with open('config.json') as json_data_file:
 hiddenList = data["Hidden"]
 favList = data["Favorites"]
 password = data["Password"]
-
-
 
 currentDirectory=data["rootDir"]
 
@@ -61,11 +59,11 @@ if 'win32' in sys.platform or 'win64' in sys.platform:
 
 if(len(favList)>3):
     favList=favList[0:3]
-    
+
 # print(favList)
 # if(len(favList)>0):
 #     for i in range(0,len(favList)):
-        
+
 #         favList[i]=favList[i].replace('\\','>') #CHANGE FOR MAC
 
 
@@ -136,7 +134,7 @@ def logoutMethod():
     if('login' in session):
         session.pop('login',None)
     return redirect('/login/')
-    
+
 #@app.route('/exit/')
 #def exitMethod():
 #    exit()
@@ -149,7 +147,7 @@ def hidden(path):
     for i in hiddenList:
         if i != '' and i in path:
             return True
-    
+
     return False
 
 
@@ -172,23 +170,23 @@ def changeDirectory(path):
     # print(myPath)
 
     print(currentDirectory)
-    
+
     try:
         os.chdir(myPath)
         ans=True
         if (osWindows):
             if(currentDirectory.replace('/','\\') not in os.getcwd()):
                 ans = False
-        else: 
+        else:
             if(currentDirectory not in os.getcwd()):
                 ans = False
     except:
         ans=False
-    
-    
+
+
 
     return ans
-    
+
 # def getDirList():
 
 
@@ -217,9 +215,9 @@ def changeView():
 
 
     return jsonify({
- 
+
         "txt":default_view,
-     
+
     })
 
 
@@ -281,8 +279,8 @@ def getDirList():
                 dots = "..."
             else:
                 dots = ""
-        
-            
+
+
 
             file_list_dict[i]={}
             file_list_dict[i]['f'] = i[0:maxNameLength]+dots
@@ -336,7 +334,7 @@ def filePage(var = ""):
         #Invalid Directory
         print("Directory Doesn't Exist")
         return render_template('404.html',errorCode=300,errorText='Invalid Directory Path',favList=favList)
-     
+
     print(default_view)
 
     try:
@@ -352,7 +350,7 @@ def filePage(var = ""):
 
     except:
         return render_template('404.html',errorCode=200,errorText='Permission Denied',favList=favList)
-    
+
 
 
     if osWindows:
@@ -360,7 +358,7 @@ def filePage(var = ""):
         var_path = '<a style = "color:black;"href = "/files/'+cList[0]+'">'+unquote(cList[0])+'</a>'
         for c in range(1,len(cList)):
             var_path += ' / <a style = "color:black;"href = "/files/'+'/'.join(cList[0:c+1])+'">'+unquote(cList[c])+'</a>'
-        
+
     else:
         cList = var.split('/')
         var_path = '<a href = "/files/"><img src = "/static/root.png" style = "height:25px;width: 25px;">&nbsp;</a>'
@@ -379,7 +377,7 @@ def homePage():
 
     if('login' not in session):
         return redirect('/login/')
-    
+
     print(currentDirectory)
     if osWindows:
         if(currentDirectory == ""):
@@ -391,7 +389,7 @@ def homePage():
             return redirect('/files/'+cura)
     else:
         return redirect('/files/'+currentDirectory)
-        
+
         #REDIRECT TO UNTITLED OR C DRIVE FOR WINDOWS OR / FOR MAC
 
 
@@ -401,14 +399,14 @@ def downloadFile(var):
 
     if('login' not in session):
         return redirect('/login/download/'+var)
-    
+
     #os.chdir(currentDirectory)
 
-    
+
     pathC = unquote(var).split('/')
     if(pathC[0]==''):
         pathC.remove(pathC[0])
-    
+
     # if osWindows:
     #     fPath = currentDirectory+'//'.join(pathC)
     # else:
@@ -428,7 +426,7 @@ def downloadFile(var):
 
 
 
-    
+
     if(hidden(f_path_hidden) == True or changeDirectory(f_path_hidden)== False):
         #FILE HIDDEN
         return render_template('404.html',errorCode=100,errorText='File Hidden',favList=favList)
@@ -449,28 +447,28 @@ def downloadFolder(var):
 
     if('login' not in session):
         return redirect('/login/downloadFolder/'+var)
-    
+
 
     pathC = var.split('/')
     if(pathC[0]==''):
         pathC.remove(pathC[0])
-    
+
     if osWindows:
         fPath = '//'.join(pathC)
     else:
         fPath = '/'+'//'.join(pathC)
-    
-    
-    
+
+
+
     f_path_hidden = '//'.join(fPath.split("//")[0:-1])
-    
+
     if(hidden(f_path_hidden) == True or changeDirectory(f_path_hidden)== False):
         #FILE HIDDEN
         return render_template('404.html',errorCode=100,errorText='File Hidden',favList=favList)
 
 
     fName=pathC[len(pathC)-1]+'.zip'
-    
+
     try:
         make_zipfile('C:\\Users\\reall\\Downloads\\temp\\abc.zip',os.getcwd())
         return send_file('C:\\Users\\reall\\Downloads\\temp\\abc.zip', attachment_filename=fName)
@@ -482,7 +480,7 @@ def downloadFolder(var):
 def page_not_found(e):
     if('login' not in session):
         return redirect('/login/')
-    
+
     # note that we set the 404 status explicitly
     return render_template('404.html',errorCode=404,errorText='Page Not Found',favList=favList), 404
 
@@ -492,7 +490,7 @@ def page_not_found(e):
 def uploadFile(var=""):
 
     if('login' not in session):
-    
+
         return render_template('login.html')
 
     text = ""
@@ -501,7 +499,7 @@ def uploadFile(var=""):
 
         if(pathC[0]==''):
             pathC.remove(pathC[0])
-        
+
         # if osWindows:
         #     fPath = currentDirectory+'//'.join(pathC)
         # else:
@@ -511,7 +509,7 @@ def uploadFile(var=""):
             fPath = +'//'.join(pathC)
         else:
             fPath = '/'+'//'.join(pathC)
-    
+
         f_path_hidden = fPath
 
         # print(f_path_hidden)
@@ -522,17 +520,17 @@ def uploadFile(var=""):
             return render_template('404.html',errorCode=100,errorText='File Hidden',favList=favList)
 
 
-        files = request.files.getlist('files[]') 
+        files = request.files.getlist('files[]')
         fileNo=0
         for file in files:
             fupload = os.path.join(fPath,file.filename)
 
             if secure_filename(file.filename) and not os.path.exists(fupload):
                 try:
-                    file.save(fupload)    
+                    file.save(fupload)
                     print(file.filename + ' Uploaded')
                     text = text + file.filename + ' Uploaded<br>'
- 
+
                     fileNo = fileNo +1
                 except Exception as e:
                     print(file.filename + ' Failed with Exception '+str(e))
@@ -543,15 +541,15 @@ def uploadFile(var=""):
                 print(file.filename + ' Failed because File Already Exists or File Type Issue')
                 text = text + file.filename + ' Failed because File Already Exists or File Type not secure <br>'
 
-            
-          
+
+
     fileNo2 = len(files)-fileNo
     return render_template('uploadsuccess.html',text=text,fileNo=fileNo,fileNo2=fileNo2,favList=favList)
 
 
 
-    
-        
+
+
 
 @app.route('/qr/<path:var>')
 def qrFile(var):
@@ -559,27 +557,27 @@ def qrFile(var):
 
     if('login' not in session):
         return redirect('/login/qr/'+var)
-    
+
     #os.chdir(currentDirectory)
-    
-    
+
+
     pathC = unquote(var).split('/')
     if(pathC[0]==''):
         pathC.remove(pathC[0])
-    
+
 
     if osWindows:
         fPath = '//'.join(pathC)
     else:
         fPath = '/'+'//'.join(pathC)
 
-    
+
     f_path_hidden = '//'.join(fPath.split("//")[0:-1])
-    
+
     if(hidden(f_path_hidden) == True or changeDirectory(f_path_hidden)== False):
         #FILE HIDDEN
         return render_template('404.html',errorCode=100,errorText='File Hidden',favList=favList)
-    
+
 
     fName=pathC[len(pathC)-1]
     #print(fPath)

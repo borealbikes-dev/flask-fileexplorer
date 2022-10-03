@@ -1,8 +1,8 @@
 {
     "Hidden":       [],
-    "Favorites":    ["Users/rehanahmed/Downloads","Users/rehanahmed/Documents"],
+    "Favorites":    ["/Users/jasonsohn/Downloads","Users/jasonsohn/Documents", "/Volumes"],
     "Password":     "",
-    "rootDir":   ""
+    "rootDir":   "/"
 
     
 }
